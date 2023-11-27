@@ -1,3 +1,10 @@
+"""I am writing a simulation code using SimPy environment for tender scheduling for vaccine procurement. It must have a main function that calls upon the following logic:
+Initial condition must be read for a group of antigens, these antigens are Polio, Diphtheria, Tetanus, Pertussis, Mumps, Measles, and Rubella. The initial conditions come from year 0 and should be read into the program as a data frame. These conditions are, for every antigen:  population of unvaccinated individuals in the market, the number of doses used of the antigen to immunize the population during the upcoming period that was committed in a previous tender year, the number of doses delivered in that year, the time-space to be covered by the supply of a resulting scheduled tender, the number of doses required per antigen to reach immunity for one individual, the current inventory of vaccines that cover the antigen,  a reorder point for every antigen that will be a product of the doses required to reach immunity multiplied by the expected birth cohort of the current year, the reservation price per vaccine, the cost per unvaccinated individual, the holding cost per dose of an antigen per period, a fixed set-up cost when a tender is scheduled. A production lead time that will be fixed for all vaccines, is 2 years. Finally, the provider capability for every vaccine that covers an antigen will take the integer value of the expected value of normal distribution with a mean and a standard deviation. There will be 3 providers for Polio, 4 providers for Diphtheria, tetanus and pertussis (one of the providers is common amongst all providers and 3 providers for Measles, Mumps and Rubella.
+The following step that the main function must call functions that perform the following events related to demand every year, from year one to the final year of the simulation: Calculating the current inventory for every antigen, which will be equal to, the inventory from the previous period plus the sum of all partial deliveries to be received in the year minus the number of vaccines used. The following function should be the inventory of unvaccinated individuals per antigen each year, which will be the number of unvaccinated individuals from the previous year, plus the immunized individuals each year plus the birth cohort of the year which will be the result of a random Poisson variable with a lambda value of average births per year. The following function that the main function must call is the calculate demand function, which will be for every antigen, which will result from multiplying the number of unvaccinated individuals in the previous function multiplied by the number of doses required to reach immunity per antigen. It must later calculate the metrics unvaccinated cost per antigen, which will be the multiplication of the unvaccinated individuals per antigen in each year, multiplied by the fixed cost per unvaccinated individual that was in the initial conditions.
+The following step is that the main function must call functions that perform tender scheduling, it must be performed individually per antigen. A tender will be scheduled if and only if the current inventory for an antigen is less or equal than its reorder point, there are no previous tender scheduled in the previous time periods extending back from the current year minus the time-space parameter plus one year and that the capacity of a provider is greater or equal to the current demand multiplied by the time-space parameter. A provider must be chosen and a variable must identify that this provider is selected
+Once a tender is scheduled, doses are committed, the committed doses will be greater or equal to the demand multiplied by the time-space parameter. 
+The next step that the main function will call is if a tender is scheduled and the committed doses are created the tender cost will be calculated as equal to the fixed set-up cost parameter. The partial deliveries will be calculated as the total doses committed divided by the time-space parameter which will be distributed equally over the time-space and will become the partial delivery used in the calculate demand function. The capabilities of the provider selected must be reduced by the committed doses, until the production lead time has passed.
+ """
 import numpy as np
 import pandas as pd
 import simpy
@@ -9,12 +16,14 @@ import csv
 seed = 42
 np.random.seed(seed)
 
-def read_initial_conditions(initial_conditions_csv):
+def read_initial_conditions(initial_conditions_csv): """Reading Initial Conditions:
+The read_initial_conditions function reads initial conditions from a CSV file into a Pandas DataFrame."""
     # Read initial conditions from a CSV file into a DataFrame
     initial_conditions = pd.read_csv(initial_conditions_csv, index_col=0)
     return initial_conditions
 
-class VaccineProcurementSimulation:
+
+class VaccineProcurementSimulation: """Initialization (__init__): Initializes the simulation with essential parameters like the simulation environment (env), initial conditions, the number of years to simulate (num_years), etc."""
     def __init__(self, env, initial_conditions, num_years):
         self.env = env
         self.initial_conditions = initial_conditions
@@ -22,7 +31,7 @@ class VaccineProcurementSimulation:
         self.providers = self.initialize_providers()
         self.num_years=num_years
 
-    def initialize_providers(self):
+    def initialize_providers(self):"""initialize_providers: Sets up providers' capabilities based on a normal distribution for different antigens."""
         # Initialize providers with capabilities based on normal distribution
         providers = {}
         for antigen in self.antigens:
@@ -42,7 +51,7 @@ class VaccineProcurementSimulation:
         return providers
     
 
-    def process_demand_with_tender_scheduling(self, production_lead_time):
+    def process_demand_with_tender_scheduling(self, production_lead_time):"""process_demand_with_tender_scheduling: Simulates the procurement process for each antigen, checking inventory, calculating demand, and determining if a tender should be scheduled based on certain conditions."""
         for current_year in range(1):
             for  antigen in (self.antigens):
                 # Calculate current inventory for every antigen
@@ -93,7 +102,7 @@ class VaccineProcurementSimulation:
             
             yield self.env.timeout(1)
     
-    def is_tender_scheduled(self, antigen, year, committed_doses):
+    def is_tender_scheduled(self, antigen, year, committed_doses):"""is_tender_scheduled: Checks conditions to decide whether a tender should be scheduled for a specific antigen in a particular year."""
         doses_required = self.initial_conditions.loc[antigen, 'doses_required']
         birth_cohort = np.random.poisson(self.initial_conditions.loc[antigen, 'average_births_per_year'])
         # Calculate the reorder point based on doses required per antigen multiplied by the birth cohort
@@ -109,7 +118,7 @@ class VaccineProcurementSimulation:
             print(f"Tender for {antigen} is scheduled in year {year} due to met conditions.")
         return conditions_met.all()   
 
-    def has_previous_tender(self, antigen, year, time_space):
+    def has_previous_tender(self, antigen, year, time_space):"""has_previous_tender: Checks if a tender has been scheduled in the past based on the time space for a particular antigen."""
         tender_schedule = self.initial_conditions.loc[antigen, 'tender_scheduled']
         for i in range(1, min(year,time_space) + 1):
             index_to_check=year-i
@@ -120,7 +129,7 @@ class VaccineProcurementSimulation:
     
         return False
 
-    def choose_provider(self, antigen, committed_doses):
+    def choose_provider(self, antigen, committed_doses):"""choose_provider: Selects a provider based on their capabilities to fulfill the committed doses for an antigen."""
         antigen_providers = self.providers.get(antigen, {})
         print(f"Antigen: {antigen}, Committed Doses: {committed_doses}")
 
@@ -156,7 +165,7 @@ class VaccineProcurementSimulation:
         return None  
     
        
-    def provider_covers_antigen(self, provider, antigen):
+    def provider_covers_antigen(self, provider, antigen):"""provider_covers_antigen: Checks if a specific provider produces vaccines that cover a given antigen."""
          # Check if the given provider produces vaccines that cover the specified antigen
             provider_prefix = self.initial_conditions.loc[antigen, "provider_prefix"]
             print(f"Antigen: {antigen}, Provider Prefix: {provider_prefix}")
@@ -166,12 +175,12 @@ class VaccineProcurementSimulation:
             print(f"Antigen: {antigen}, Provider Covers: {covers}")
             return covers
 
-    def update_provider_capabilities(self, antigen, provider, committed_doses):
+    def update_provider_capabilities(self, antigen, provider, committed_doses):"""update_provider_capabilities: Updates provider capabilities after a tender is scheduled."""
         # Update provider capabilities after a tender is scheduled
         # Reduce the capabilities of the selected provider
         self.providers[antigen][provider] -= committed_doses
     
-    def run_one_year_simulation(self, production_lead_time):
+    def run_one_year_simulation(self, production_lead_time):"""run_one_year_simulation: Runs the simulation for one year."""
         # Run the simulation for one year
         for antigen in self.antigens:
             self.env.process(self.process_demand_with_tender_scheduling(production_lead_time))
@@ -180,7 +189,7 @@ class VaccineProcurementSimulation:
         # Collect and store results for the first year
         self.store_yearly_results()
 
-    def store_yearly_results(self):
+    def store_yearly_results(self):"""store_yearly_results: Stores the results of the simulation for each antigen for each year."""
         result_vector = []
         for year in range(self.num_years):
             for antigen in self.antigens:
@@ -209,7 +218,7 @@ class VaccineProcurementSimulation:
         # Return the result_vector containing results for each antigen for each year
         return result_vector
 
-    def update_initial_conditions(self):
+    def update_initial_conditions(self):"""update_initial_conditions: Updates initial conditions for subsequent years based on stored results."""
         # Update initial conditions for subsequent years using the results from the stored result_vector
         for result in result_vector:
             antigen = result['Antigen']
@@ -222,7 +231,7 @@ class VaccineProcurementSimulation:
             self.initial_conditions.loc[antigen, f'holding_cost_year_{year}'] = result['Holding Cost']
             self.initial_conditions.loc[antigen, 'unvaccinated_cost'] = result['Unvaccinated Cost']
 
-    def run_remaining_years_simulation(self, production_lead_time):
+    def run_remaining_years_simulation(self, production_lead_time):"""run_remaining_years_simulation: Runs the simulation for the remaining years."""
         # Run the simulation for the remaining years using updated initial conditions
         for year in range(2, self.num_years + 1):
             self.update_initial_conditions()  # Update initial conditions for each year
@@ -231,13 +240,13 @@ class VaccineProcurementSimulation:
             self.env.run(until=year)  # Run for the specific year
 
    
-    def run_simulation(self, production_lead_time):
+    def run_simulation(self, production_lead_time):"""run_simulation: Main function to run the entire simulation for multiple years."""
         # Run simulation for one year initially, then subsequent years
         self.run_one_year_simulation(production_lead_time)
         self.run_remaining_years_simulation(production_lead_time)
 
     
-    def calculate_objective_function(self):
+    def calculate_objective_function(self):"""calculate_objective_function: Calculates an objective function based on various costs and parameters."""
         objective_value = 0
         
         for antigen in self.antigens:
@@ -258,7 +267,7 @@ class VaccineProcurementSimulation:
         
         return objective_value
 
-    def save_tender_scheduling_results(self):
+    def save_tender_scheduling_results(self):"""save_tender_scheduling_results: Saves tender scheduling results to a CSV file."""
         # Save tender scheduling results per antigen over 15 years to a CSV file
         with open('tender_scheduling_results.csv', 'w', newline='') as csvfile:
             fieldnames = ['Antigen', 'Year', 'Committed Doses']
@@ -270,7 +279,7 @@ class VaccineProcurementSimulation:
                     committed_doses = self.initial_conditions.loc[antigen, f'committed_doses_year_{year}']
                     writer.writerow({'Antigen': antigen, 'Year': year, 'Committed Doses': committed_doses})
 
-    def save_yearly_values(self):
+    def save_yearly_values(self):"""save_yearly_values: Saves yearly values for each antigen to a CSV file."""
         # Save yearly values for each antigen to a CSV file
         with open('yearly_values.csv', 'w', newline='') as csvfile:
             fieldnames = ['Antigen', 'Year', 'Current Inventory', 'Committed Doses', 'Purchase Cost', 'Holding Cost', 'Unvaccinated Cost', 'Objective Function']
@@ -290,7 +299,17 @@ class VaccineProcurementSimulation:
                                      'Objective Function': objective_function}) 
     
 
-def main():
+def main():"""Main Function (main):
+Reads initial conditions from a CSV file.
+Sets up the simulation environment (simpy.Environment()).
+Initializes the simulation object (VaccineProcurementSimulation) and runs the simulation.
+Overall Flow:
+Read initial conditions.
+Initialize simulation parameters.
+Run the simulation for a specified number of years.
+Store and update results.
+Calculate objective functions and save results to CSV files.
+"""
     # Specify the file path for your initial conditions CSV file
     file_path = 'initial_conditions.csv'
 
@@ -310,4 +329,5 @@ def main():
     simulation.run_simulation(production_lead_time)
 
 if __name__ == "__main__":
+    main()
     main()
