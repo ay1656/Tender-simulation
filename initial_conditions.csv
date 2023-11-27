@@ -1,0 +1,5 @@
+Antigen,time_space,doses_required,average_births_per_year,current_inventory,partial_deliveries,vaccines_used,cost_per_unvaccinated_individual,fixed_setup_cost,tender_scheduled,provider_mean_capability,provider_std_dev_capability,num_providers, provider_prefix,unvaccinated_individuals,reservation_price,holding_cost,purchase_cost
+Polio,4, 2,530640, 10000, 6000, 3000, 0.1, 5000,0, 5000000, 1000,3,ProviderPolio, 3000, 2.5, 5, 3
+Diphtheria, 4, 3, 530640, 8500, 3500, 2150, 0.08, 3000,0, 7000000, 1200,3,ProviderDiphtheria, 2250, 3,4,3.5
+Tetanus, 4, 2, 530640, 9000, 6750,3500, 0.12, 4500,0,6000000, 800,3,ProviderTetanus, 2100, 3.5,4,3.5
+Pertussis,4,3,530640, 8000,5500, 1500, 0.20, 5500,1, 6500000, 800,3,ProviderPertussis, 1780,3.5,4,3.5
