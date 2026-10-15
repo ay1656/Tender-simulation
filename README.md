@@ -1,4 +1,4 @@
-Vaccine Procurement and Tender Scheduling Simulation
+1.) Vaccine Procurement and Tender Scheduling Simulation
 Overview
 
 The project develops a discrete-event simulation framework for vaccine procurement and tender scheduling using the SimPy simulation environment. The models represent the interaction between vaccine demand, population growth, inventory levels, procurement decisions, provider production capacity, tender commitments, partial deliveries, procurement costs, and production lead times. The simulation is structured around a group of vaccine antigens, including Polio, Diphtheria, Tetanus, Pertussis, Mumps, Measles, and Rubella, with the initial conditions for each antigen being provided through CSV files and loaded into Pandas DataFrames. These initial conditions establish the operational and economic parameters required for the simulation, including unvaccinated population, current inventory, vaccine usage, birth cohorts, doses required for immunity, provider capacity, reorder parameters, reservation prices, holding costs, unvaccinated costs, purchase costs, and tender set-up costs.
@@ -71,7 +71,46 @@ Implementation Notes
 
 Overall, the project establishes a simulation-based framework for studying vaccine procurement decisions under stochastic demand, limited provider capacity, inventory constraints, tender timing rules, and production lead times. The two implementations build upon the same procurement logic while supporting different analytical objectives: repeated and parallel simulation in one implementation, and experimental-design, regression, and response-surface analysis in the other.
 
-File Naming and Formatting Conventions
+2.) Response Surface Methodology (RSM) code:
+The code implements a simulation of vaccine procurement and tender scheduling over a multi-year planning horizon. It models how vaccine demand changes over time, how vaccine suppliers are selected, when new procurement tenders should be scheduled, and how these decisions affect an objective function.
+
+The script then attempts to use the results of repeated simulations in a response surface methodology (RSM) analysis. This statistical and optimization technique fits a mathematical model to the simulation results, examines relationships between experimental factors and the objective value, and calculates a direction of steepest ascent.
+The code can be divided into five main stages:
+
+1. Initialization and input data: Read initial conditions from CSV files and generate supplier production capabilities.
+2. Procurement simulation: Simulate vaccine demand, inventory levels, tender decisions, supplier capacity, production lead times, and deliveries.
+3. Objective-function calculation: Evaluate the objective value associated with the simulated procurement decisions.
+4. Repeated experiments and optimization: Run the simulation for multiple replicates and multiple input configurations, then save the results.
+5. Response surface analysis: Fit a second-order regression model, calculate a direction vector, and generate a three-dimensional response surface plot.
+The main simulation is built around VaccineProcurementSimulation, a Python class that uses pandas for tabular data, NumPy for numerical calculations and random sampling, and SimPy for discrete-event simulation.
+An important distinction is that the code contains both a simulation model and an attempted optimization-analysis workflow. The simulation generates procurement outcomes; the later regression model analyzes those outcomes. The script does not, by itself, establish that the resulting procurement policy is globally optimal.
+
+The script combines a stochastic vaccine procurement simulation with a regression-based optimization analysis.
+The simulation component attempts to represent the evolution of vaccine demand and inventory over multiple years, the scheduling of procurement tenders, the temporary allocation of supplier capacity, and the effects of production lead times. It records yearly results and evaluates an objective function based on reservation-price contributions and fixed tender costs.
+The experimental component repeats this simulation for multiple initial-condition files and random seeds. The resulting objective values are then associated with three experimental factors, averaged across replicates, and used to fit a second-order regression model. Finally, the code extracts a direction vector from the linear regression coefficients and attempts to visualize the fitted response surface.
+The intended analytical workflow is:
+Input data and parameter configurations => Multi-year stochastic procurement simulation => Yearly results and objective values => Experimental-factor assignment and averaging => Second-order regression model => Candidate search direction and response-surface visualization
+
+The central purpose is to use simulation to evaluate procurement behavior under uncertainty and then use the resulting objective values to investigate how changes in experimental parameters may improve performance.
+
+3.) Imported libraries and reproducibility for codes
+
+The code begins by importing the following libraries:
+Library	Purpose in the script
+
+a) numpy	Random sampling, numerical calculations, and mathematical operations
+b)pandas	Reading CSV files, storing simulation data, and constructing results tables
+c) simpy	Managing simulation processes and production lead-time delays
+d) matplotlib.pyplot	Plotting the response surface
+e) scipy.stats.poisson	Imported, although the shown code uses np.random.poisson instead
+f) statsmodels.formula.api.ols	Fitting the regression model
+g) statsmodels.stats.anova.anova_lm	Imported but not used in the shown code
+h) statsmodels.api	Imported as sm, but not used in the shown code
+i) itertools.combinations	Examining combinations of suppliers
+j) multiprocessing.Process	Imported but not used in the shown code
+k) os	Constructing paths to AMPL model files
+
+4.) File Naming and Formatting Conventions
 
 The project uses three groups of CSV files, each identified by a consistent naming convention according to its purpose. The initial conditions files, named initial_conditions_1111111_..., contain the input data required to initialize the project code. Their filenames encode the configuration parameters, such as the values associated with the different numbered settings (e.g., 3_1, 3_6, 3_10, 4_1, and 5_1), followed by additional parameter values such as 105 or 110. These files provide the starting conditions for the simulations or computations.
 
@@ -79,7 +118,8 @@ The final results files, named final_results_5_1_years, final_results_5_2_years,
 
 This naming structure allows files to be identified and organized systematically by type, configuration, and simulation duration. For consistency, the filenames follow a common pattern using underscores to separate fields, while the .csv extension indicates the data format. The initial conditions files serve as inputs to the project code, whereas the final results and all-objective results files store the outputs generated during execution.
 
-Statistical Analysis.py Code:
+5.) Statistical Analysis.py Code:
+
 The code you provided is a statistical analysis and visualization workflow for comparing optimization results across different planning horizons and initial-condition scenarios. It uses Python to test statistical differences between groups, calculate financial performance indicators, quantify uncertainty, and compare an optimization model against a benchmark simulation.
 The script is organized into five main analytical sections:
 1. Levene’s test and one-way ANOVA — to examine differences in group means and assess equality of variances.
