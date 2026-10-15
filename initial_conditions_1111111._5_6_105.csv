@@ -1,0 +1,8 @@
+Antigen,time_space,doses_required,average_births_per_year,current_inventory,partial_deliveries,vaccines_used,cost_per_unvaccinated_individual,fixed_setup_cost,tender_scheduled,provider_mean_capability,provider_std_dev_capability,num_providers,provider_prefix,unvaccinated_individuals,reservation_price,holding_cost,purchase_cost,committed_doses,factor
+Polio,5,2,65547906,10000,6000,3000,0.1,25000000,1,500000000,25000000,2,ProviderPolio,152196,2.5,5,3,0,1.05
+DTP,5,3,65547906,8500,3500,2150,0.08,30000000,1,700000000,32500000,4,ProviderDTP,163256,4,4,4.5,0,1.05
+MMR,5,2,65547906,1200000,550000,150000,0.25,25000000,1,750000000,32000000,2,ProviderMMR,3433300,3.5,4,4,0,1.05
+HiB,5,2,65547906,9000,6750,3500,0.12,30000000,1,700000000,18000000,3,ProviderHiB,1730285,4,4,4.5,0,1.05
+BCG,5,1,65547906,9000,6750,3500, 0.12, 94250000,1,330000000,23100000,6,ProviderBCG, 14291120,0.23,5, 45,0,1.05
+HPV,5,2,65547906,9000,6750,3500,0.12,94250000,1,880000000,52800000,6,ProviderHPV,14291120,2.9,5,45,0,1.05
+PCV,5,4,65547906,9000,6750,3500,0.12,54750000,1,367500000, 22050000,6,ProviderPCV,346837527,2,4,45,0,1.05
