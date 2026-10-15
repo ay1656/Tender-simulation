@@ -78,3 +78,42 @@ The project uses three groups of CSV files, each identified by a consistent nami
 The final results files, named final_results_5_1_years, final_results_5_2_years, and so on, store the results obtained for each specified number of years. Similarly, the all-objective results files, named all_objective_results_5_1_years, all_objective_results_5_2_years, etc., contain the results associated with all objectives for the corresponding simulation period.
 
 This naming structure allows files to be identified and organized systematically by type, configuration, and simulation duration. For consistency, the filenames follow a common pattern using underscores to separate fields, while the .csv extension indicates the data format. The initial conditions files serve as inputs to the project code, whereas the final results and all-objective results files store the outputs generated during execution.
+
+Statistical Analysis.py Code:
+The code you provided is a statistical analysis and visualization workflow for comparing optimization results across different planning horizons and initial-condition scenarios. It uses Python to test statistical differences between groups, calculate financial performance indicators, quantify uncertainty, and compare an optimization model against a benchmark simulation.
+The script is organized into five main analytical sections:
+1. Levene’s test and one-way ANOVA — to examine differences in group means and assess equality of variances.
+2. Kruskal–Wallis test — to test for differences among groups using a non-parametric method.
+3. Dunn’s post-hoc test — to identify which pairs of groups differ.
+4. Equivalent Annual Annuity (EAA) analysis — to compare scenarios and planning horizons using grouped bar charts, confidence intervals, tables, and summary statistics.
+5. Optimization versus benchmark box plots — to compare the distributions of objective values from the two models and display their means and 95% confidence intervals.
+The overall purpose is to determine whether changes in planning horizon or initial conditions affect the objective values produced by the simulation and optimization process, and whether the optimization model performs differently from a benchmark.
+One important distinction is that the code performs several separate analyses rather than one unified statistical test. Each section loads data independently, uses different significance levels in some cases, and addresses a slightly different question.
+
+Libraries and data handling
+The script relies on several Python libraries.
+Library	Purpose in the code
+a) pandas	Reads CSV files and organizes results into DataFrames and Series.
+b) numpy	Calculates means, standard deviations, array positions, and numerical summaries.
+c) scipy.stats	Performs Levene’s test, ANOVA, Kruskal–Wallis, standard-error calculations, and Student’s t-based inference.
+d) scikit_posthocs	Performs Dunn’s post-hoc comparisons with Holm adjustment.
+e) atplotlib.pyplot	Creates bar charts, error bars, and other plots.
+f) seaborn	Creates box plots.
+g) os	Lists files in a directory and constructs file paths.
+h) re	Extracts planning horizons and scenario identifiers from filenames.
+i) IPython.display.display	Displays tables in an interactive notebook.
+
+The code expects the input CSV files to exist in the working directory or the specific Windows directory configured in the plotting sections. It also assumes that the files contain the columns expected by each section.
+The first two statistical sections select data by column position, whereas the EAA and box-plot sections expect a column explicitly named Objective Value. This distinction is important because the CSV formats must match the assumptions made by each section.
+
+The code reads four CSV files:
+
+data1 = pd.read_csv('all_objective_results_5_500_years.csv')
+data2 = pd.read_csv('all_objective_results_10_500_years.csv')
+data3 = pd.read_csv('all_objective_results_15_500_years.csv')
+data4 = pd.read_csv('all_objective_results_20_500_years.csv')
+
+These filenames again correspond to 5-, 10-, 15-, and 20-year planning horizons and 500 replicates applied.
+
+The code is designed to analyze simulation and optimization outputs from several complementary perspectives. It tests for statistical differences, examines which groups differ, converts mean present values into annualized financial equivalents, and visualizes differences in objective-value distributions between an optimization model and a benchmark simulation.
+Its strongest feature is the combination of statistical inference, financial normalization, and graphical analysis. This allows the analyst to examine both whether differences are statistically detectable and how those differences appear across scenarios and planning horizons.
