@@ -70,3 +70,11 @@ The first code extends the model toward experimental analysis by organizing obje
 Implementation Notes
 
 Overall, the project establishes a simulation-based framework for studying vaccine procurement decisions under stochastic demand, limited provider capacity, inventory constraints, tender timing rules, and production lead times. The two implementations build upon the same procurement logic while supporting different analytical objectives: repeated and parallel simulation in one implementation, and experimental-design, regression, and response-surface analysis in the other.
+
+File Naming and Formatting Conventions
+
+The project uses three groups of CSV files, each identified by a consistent naming convention according to its purpose. The initial conditions files, named initial_conditions_1111111_..., contain the input data required to initialize the project code. Their filenames encode the configuration parameters, such as the values associated with the different numbered settings (e.g., 3_1, 3_6, 3_10, 4_1, and 5_1), followed by additional parameter values such as 105 or 110. These files provide the starting conditions for the simulations or computations.
+
+The final results files, named final_results_5_1_years, final_results_5_2_years, and so on, store the results obtained for each specified number of years. Similarly, the all-objective results files, named all_objective_results_5_1_years, all_objective_results_5_2_years, etc., contain the results associated with all objectives for the corresponding simulation period.
+
+This naming structure allows files to be identified and organized systematically by type, configuration, and simulation duration. For consistency, the filenames follow a common pattern using underscores to separate fields, while the .csv extension indicates the data format. The initial conditions files serve as inputs to the project code, whereas the final results and all-objective results files store the outputs generated during execution.
